@@ -12,15 +12,17 @@ TrueWatch enables unified full-link observability. Real-time reporting of LTS lo
 ### Architecture Diagram (Mermaid Format)
 ```mermaid
 graph LR
-    A[Huawei Cloud Products<br/>(ELB, GaussDB, etc.)] -->|Log Output| B[LTS Log Service]
-    B -->|Real-time Dump| C[DMS Kafka Message Channel]
-    C -->|Log Consumption| D[DataKit Kafka Input<br/>(Deployed on Client-side such as ECS)]
-    D -->|Send Logs| E[TrueWatch]
-    E -->|Function Support| F[Visual Analysis]
-    E -->|Function Support| G[Log Viewing]
-    E -->|Function Support| H[Log Storage]
-    E -->|Function Support| I[Intelligent Alerting]
-    E -->|Function Support| J[Unified Log Retrieval]
+    A["Huawei Cloud Products
+(ELB, GaussDB, etc.)"] -->|Log Output| B["LTS Log Service"]
+    B -->|Real-time Dump| C["DMS Kafka Message Channel"]
+    C -->|Log Consumption| D["DataKit Kafka Input
+(Deployed on Client-side such as ECS)"]
+    D -->|Send Logs| E["TrueWatch"]
+    E -->|Function Support| F["Visual Analysis"]
+    E -->|Function Support| G["Log Viewing"]
+    E -->|Function Support| H["Log Storage"]
+    E -->|Function Support| I["Intelligent Alerting"]
+    E -->|Function Support| J["Unified Log Retrieval"]
 ```
 
 ### Component Description
