@@ -24,7 +24,7 @@ This solution is based on the OpenTelemetry (OTel) open-source standard and impl
 - Recommended: abapGit (SAP official Git client, used for quick SDK installation);
 - Alternative: SAP standard transaction codes (SE11/SE24/SE38/SE19/SE80, core operation tools throughout the process).
 
-## 2. ABAP OpenTelemetry SDK Installation (Two Options, Pure Operation)
+## 2. ABAP OpenTelemetry SDK Installation (Online & Offline Installation)
 ### Online Installation: abapGit Automated Installation (Recommended, refer to offline installation steps if no external network)
 #### Step 1: Install abapGit
 1. Transaction Code `SE38` → Select "Executable Program" → Enter program name `ZABAPGIT` → Click "Create";
