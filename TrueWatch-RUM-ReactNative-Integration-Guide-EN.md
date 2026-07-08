@@ -89,24 +89,53 @@ cd ios && pod install && cd ..
 
 Create `src/rum/rumConfig.ts`, shared by both platforms, with platform differences handled via `Platform.select`. Initialization is called in a fixed order: base config → RUM config → log config.
 
+**Recommended: load credentials from environment variables rather than hardcoding them in a file that goes into version control.** This example uses `react-native-dotenv`:
+
+```bash
+npm install --save-dev react-native-dotenv
+```
+
+`babel.config.js`:
+
+```js
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: [
+    ['module:react-native-dotenv', { moduleName: '@env', path: '.env', safe: true, allowUndefined: false }],
+  ],
+};
+```
+
+Create a `.env` file with the real values (add it to `.gitignore` — never commit it), and a `.env.example` with placeholders (safe to commit, documents the required keys for teammates):
+
+```
+RUM_DATAWAY_URL=<your-datawayUrl>
+RUM_CLIENT_TOKEN_ANDROID=<your-Android-clientToken>
+RUM_SERVICE_ANDROID=<yourApp>
+RUM_APP_ID_ANDROID=<your-Android-appId>
+RUM_CLIENT_TOKEN_IOS=<your-iOS-clientToken>
+RUM_SERVICE_IOS=<yourApp_ios>
+RUM_APP_ID_IOS=<your-iOS-appId>
+```
+
 ```ts
 import { Platform } from 'react-native';
+import {
+  RUM_DATAWAY_URL, RUM_CLIENT_TOKEN_ANDROID, RUM_SERVICE_ANDROID, RUM_APP_ID_ANDROID,
+  RUM_CLIENT_TOKEN_IOS, RUM_SERVICE_IOS, RUM_APP_ID_IOS,
+} from '@env';
 import {
   FTMobileReactNative, FTReactNativeRUM, FTReactNativeLog, EnvType,
   type FTMobileConfig, type FTRUMConfig, type FTLogConfig,
 } from '@cloudcare/react-native-mobile';
 
-const clientToken = Platform.select({
-  android: '<your-Android-clientToken>',
-  ios: '<your-iOS-clientToken>',
-}) as string;
-
-const service = Platform.select({ android: 'yourApp', ios: 'yourApp_ios' }) as string;
+const clientToken = Platform.select({ android: RUM_CLIENT_TOKEN_ANDROID, ios: RUM_CLIENT_TOKEN_IOS }) as string;
+const service = Platform.select({ android: RUM_SERVICE_ANDROID, ios: RUM_SERVICE_IOS }) as string;
 
 export async function initRUM(): Promise<void> {
   // 1) Base reporting config
   const config: FTMobileConfig = {
-    datawayUrl: '<your-datawayUrl>',
+    datawayUrl: RUM_DATAWAY_URL,
     clientToken,
     envType: EnvType.local,
     service,
@@ -117,8 +146,8 @@ export async function initRUM(): Promise<void> {
 
   // 2) RUM collection config (auto-collect the six data types where possible)
   const rumConfig: FTRUMConfig = {
-    androidAppId: '<your-Android-appId>',
-    iOSAppId: '<your-iOS-appId>',
+    androidAppId: RUM_APP_ID_ANDROID,
+    iOSAppId: RUM_APP_ID_IOS,
     sampleRate: 100,
     enableAutoTrackUserAction: true,   // action
     enableAutoTrackError: true,        // error
@@ -140,11 +169,26 @@ export async function initRUM(): Promise<void> {
 }
 ```
 
+Add a type declaration so `@env` type-checks, `env.d.ts` at the project root:
+
+```ts
+declare module '@env' {
+  export const RUM_DATAWAY_URL: string;
+  export const RUM_CLIENT_TOKEN_ANDROID: string;
+  export const RUM_SERVICE_ANDROID: string;
+  export const RUM_APP_ID_ANDROID: string;
+  export const RUM_CLIENT_TOKEN_IOS: string;
+  export const RUM_SERVICE_IOS: string;
+  export const RUM_APP_ID_IOS: string;
+}
+```
+
 **Notes**
 
 - **`enableNativeUserView` must be set to `false`.** All RN screens run inside the same native container; the native layer's automatic view collection cannot see RN route changes and collapses every screen into a single view named `ApplicationLaunch`. Real screen names come from the JS adapter in Step 6 — use one or the other, otherwise data is duplicated and confusing.
 - `sampleRate: 100` is convenient for development verification; lower it as needed in production.
 - `debug: true` is for development only; turn it off before release.
+- **Never commit `.env`.** Commit only `.env.example` with placeholders; share the real `.env` with teammates out of band. If you prefer not to add a dependency, hardcoding the values directly in `rumConfig.ts` still works for a quick throwaway prototype, but is not recommended for anything checked into shared version control.
 
 **Official reference**
 
