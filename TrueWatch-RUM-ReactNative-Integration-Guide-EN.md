@@ -249,7 +249,7 @@ export default function App() {
 
 **Official reference**
 
-- [React Native Application Data Collection (view / action / resource, etc.)](https://docs.truewatch.com/real-user-monitoring/react-native/app-data-collection/)
+- [RUM Configuration (React Native View auto-collection section)](https://docs.truewatch.com/real-user-monitoring/react-native/config-rum/)
 
 ---
 
